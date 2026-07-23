@@ -70,3 +70,25 @@ export const chatWithShoppingAssistant = async (
     return "I'm having a little trouble connecting to my brain right now. Please try again later!";
   }
 };
+
+export const generateImageFromGemini = async (prompt: string, isAspectWide: boolean = false): Promise<string> => {
+  try {
+    const response = await ai.models.generateImages({
+      model: 'imagen-3.0-generate-002',
+      prompt: prompt,
+      config: {
+        numberOfImages: 1,
+        outputMimeType: 'image/jpeg',
+        aspectRatio: isAspectWide ? '16:9' : '1:1'
+      }
+    });
+
+    if (response.generatedImages && response.generatedImages.length > 0) {
+      const base64Bytes = response.generatedImages[0].image.imageBytes;
+      return `data:image/jpeg;base64,${base64Bytes}`;
+    }
+  } catch (error) {
+    console.error("Error generating image from Gemini:", error);
+  }
+  return '';
+};

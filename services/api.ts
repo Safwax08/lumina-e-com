@@ -1,37 +1,27 @@
 import { Product } from '../types';
-
-// -----------------------------------------------------------------------------
-// API CONFIGURATION
-// Switched to DummyJSON for a larger dataset (100+ items) to provide more variety
-// -----------------------------------------------------------------------------
-const BASE_URL = 'https://dummyjson.com';
+import { productsData } from './productsData';
 
 export const fetchProducts = async (): Promise<Product[]> => {
   try {
-    // Fetch 100 products to provide a larger catalog
-    const response = await fetch(`${BASE_URL}/products?limit=100`);
-    
-    if (!response.ok) {
-      throw new Error('Failed to fetch products');
-    }
-    
-    const data = await response.json();
-    
-    // Map DummyJSON response to our Product interface
-    // DummyJSON structure: { products: [ { id, title, price, ... }, ... ] }
-    return data.products.map((item: any) => ({
-      id: item.id,
-      title: item.title,
-      price: item.price,
-      description: item.description,
-      category: item.category, // Returns category slug (e.g., 'smartphones')
-      image: item.thumbnail,   // Using thumbnail for the main image
-      rating: {
-        rate: item.rating,
-        // DummyJSON products usually have a reviews array; we use the length or fallback to a mock number
-        count: item.reviews ? item.reviews.length : Math.floor(Math.random() * 200) + 50
-      }
-    }));
+    return (productsData.products as any[]).map((item: any) => {
+      // Find category handle to map to category slug
+      const cat = productsData.categories.find(c => c.id === item.category_id);
+      const categoryHandle = cat ? cat.handle : (item.category_id || 'general');
+
+      return {
+        id: item.id,
+        title: item.name,
+        price: item.price,
+        original_price: item.original_price,
+        brand: item.brand,
+        description: item.description,
+        category: categoryHandle,
+        image: item.images && item.images.length > 0 ? item.images[0] : 'https://sparkgadgets-demo.zohoecommerce.com/zs-common/images/no-preview-image.jpg',
+        rating: item.rating || { rate: 4.5, count: 50 },
+        attributes: item.attributes,
+        variants: item.variants
+      };
+    });
   } catch (error) {
     console.error("Error fetching products:", error);
     return [];
@@ -39,16 +29,11 @@ export const fetchProducts = async (): Promise<Product[]> => {
 };
 
 export const fetchCategories = async (): Promise<string[]> => {
-    try {
-        const response = await fetch(`${BASE_URL}/products/categories`);
-        if (!response.ok) throw new Error('Failed to fetch categories');
-        
-        const data = await response.json();
-        // DummyJSON returns an array of objects: { slug: "beauty", name: "Beauty", url: "..." }
-        // We return the slug to match the product.category field exactly for filtering
-        return data.map((c: any) => c.slug);
-    } catch (error) {
-        console.error("Error fetching categories:", error);
-        return [];
-    }
+  try {
+    return productsData.categories.map(c => c.handle);
+  } catch (error) {
+    console.error("Error fetching categories:", error);
+    return [];
+  }
 };
+

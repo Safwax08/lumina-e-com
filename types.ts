@@ -1,7 +1,9 @@
 export interface Product {
-  id: number;
+  id: string;
   title: string;
   price: number;
+  original_price?: number;
+  brand?: string;
   description: string;
   category: string;
   image: string;
@@ -9,6 +11,29 @@ export interface Product {
     rate: number;
     count: number;
   };
+  attributes?: Array<{
+    id: string;
+    name: string;
+    type: string;
+    options: Array<{
+      id: string;
+      value: string;
+      color_code?: string;
+    }>;
+  }>;
+  variants?: Array<{
+    id: string;
+    options: Array<{
+      id: string;
+      name: string;
+      value: string;
+      color_code?: string;
+    }>;
+    price: number;
+    original_price?: number;
+    stock: number;
+    image: string | null;
+  }>;
 }
 
 export interface CartItem extends Product {

@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Product, ChatMessage } from '../types';
-import { ChatBubbleIcon, CloseIcon, SparklesIcon } from './Icons';
+import { CloseIcon, SparklesIcon } from './Icons';
 import { chatWithShoppingAssistant } from '../services/geminiService';
 
 interface AiAssistantProps {
@@ -13,7 +13,7 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ products }) => {
     { 
       id: 'init', 
       role: 'model', 
-      text: 'Hi! I\'m Lumina, your personal shopping assistant. Looking for something specific or need style advice?' 
+      text: 'Hi! I\'m Sparky, your personal gadgets and fashion assistant. Looking for something specific or need some gift advice?' 
     }
   ]);
   const [input, setInput] = useState('');
@@ -66,45 +66,45 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ products }) => {
       {/* Floating Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`fixed bottom-6 right-6 z-40 p-4 rounded-full shadow-xl transition-all duration-300 flex items-center justify-center
-          ${isOpen ? 'bg-gray-800 rotate-90' : 'bg-gradient-to-r from-indigo-600 to-purple-600 hover:scale-110'}
+        className={`fixed bottom-6 right-6 z-40 p-4 rounded-full shadow-2xl transition-all duration-300 flex items-center justify-center border
+          ${isOpen ? 'bg-slate-900 rotate-90 border-slate-800 text-white' : 'bg-[#750a27] text-white hover:scale-110 shadow-lg shadow-slate-900/20 border-transparent'}
         `}
       >
         {isOpen ? (
-            <CloseIcon className="w-6 h-6 text-white" />
+            <CloseIcon className="w-5 h-5" />
         ) : (
-            <SparklesIcon className="w-6 h-6 text-white animate-pulse" />
+            <SparklesIcon className="w-5 h-5 animate-pulse text-[#ffd002]" />
         )}
       </button>
 
       {/* Chat Window */}
-      <div className={`fixed bottom-24 right-6 z-40 w-[90vw] sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-100 flex flex-col overflow-hidden transition-all duration-300 origin-bottom-right
+      <div className={`fixed bottom-24 right-6 z-40 w-[90vw] sm:w-96 bg-white rounded-3xl shadow-2xl border border-slate-100 flex flex-col overflow-hidden transition-all duration-300 origin-bottom-right
         ${isOpen ? 'scale-100 opacity-100 translate-y-0' : 'scale-90 opacity-0 translate-y-10 pointer-events-none'}
       `}
       style={{ maxHeight: '600px', height: '70vh' }}
       >
         {/* Header */}
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 p-4 flex items-center gap-3">
-          <div className="bg-white/20 p-2 rounded-full">
-             <SparklesIcon className="w-5 h-5 text-white" />
+        <div className="bg-[#750a27] p-4 flex items-center gap-3 border-b border-slate-100">
+          <div className="bg-white/10 border border-white/10 p-2 rounded-xl">
+             <SparklesIcon className="w-4 h-4 text-[#ffd002]" />
           </div>
           <div>
-             <h3 className="text-white font-bold text-sm">Lumina Assistant</h3>
-             <p className="text-indigo-100 text-xs">Powered by Gemini AI</p>
+             <h3 className="text-white font-bold text-sm tracking-wide">Spark Assistant</h3>
+             <p className="text-red-200 text-[10px] font-semibold uppercase tracking-widest">Powered by Gemini AI</p>
           </div>
         </div>
 
         {/* Messages */}
-        <div className="flex-1 overflow-y-auto p-4 bg-gray-50 space-y-4">
+        <div className="flex-1 overflow-y-auto p-4 bg-slate-50 space-y-4">
             {messages.map((msg) => (
                 <div 
                     key={msg.id} 
                     className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
-                    <div className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm ${
+                    <div className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-sm ${
                         msg.role === 'user' 
-                        ? 'bg-indigo-600 text-white rounded-br-none' 
-                        : 'bg-white text-gray-800 shadow-sm border border-gray-100 rounded-bl-none'
+                        ? 'bg-[#750a27] text-white rounded-br-none shadow-sm font-medium' 
+                        : 'bg-white text-slate-800 rounded-2xl rounded-bl-none border border-slate-200/60 shadow-sm font-light'
                     }`}>
                         {msg.text}
                     </div>
@@ -112,10 +112,10 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ products }) => {
             ))}
             {isLoading && (
                 <div className="flex justify-start">
-                    <div className="bg-white text-gray-500 shadow-sm border border-gray-100 rounded-2xl rounded-bl-none px-4 py-3 text-xs flex items-center gap-1">
-                        <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce"></span>
-                        <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></span>
-                        <span className="w-1.5 h-1.5 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></span>
+                    <div className="bg-white text-slate-500 border border-slate-200/60 rounded-2xl rounded-bl-none px-4 py-3 text-xs flex items-center gap-1.5 shadow-sm">
+                        <span className="w-1.5 h-1.5 bg-[#750a27] rounded-full animate-bounce"></span>
+                        <span className="w-1.5 h-1.5 bg-[#750a27] rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></span>
+                        <span className="w-1.5 h-1.5 bg-[#750a27] rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></span>
                     </div>
                 </div>
             )}
@@ -123,7 +123,7 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ products }) => {
         </div>
 
         {/* Input */}
-        <div className="p-3 bg-white border-t border-gray-100">
+        <div className="p-3.5 bg-white border-t border-slate-100">
             <form 
                 onSubmit={(e) => {
                     e.preventDefault();
@@ -136,14 +136,14 @@ export const AiAssistant: React.FC<AiAssistantProps> = ({ products }) => {
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Ask about products..."
-                    className="flex-1 bg-gray-100 rounded-full px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    className="flex-1 bg-slate-50 border border-slate-200 text-slate-800 rounded-2xl px-4 py-2.5 text-sm focus:outline-none focus:border-slate-300 focus:bg-white placeholder-slate-400 transition-all font-light"
                 />
                 <button 
                     type="submit"
                     disabled={isLoading || !input.trim()}
-                    className="bg-indigo-600 text-white p-2 rounded-full hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    className="bg-[#750a27] hover:bg-slate-900 text-white p-2.5 rounded-2xl hover:opacity-95 disabled:opacity-30 disabled:cursor-not-allowed transition-all duration-300 shadow-md"
                 >
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-4 h-4">
                         <path d="M3.478 2.404a.75.75 0 0 0-.926.941l2.432 7.905H13.5a.75.75 0 0 1 0 1.5H4.984l-2.432 7.905a.75.75 0 0 0 .926.94 60.519 60.519 0 0 0 18.445-8.986.75.75 0 0 0 0-1.218A60.517 60.517 0 0 0 3.478 2.404Z" />
                     </svg>
                 </button>
