@@ -12,7 +12,7 @@ export function AdminLogin({ onLogin, onCancel }: AdminLoginProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (username === 'mahdsafwan' && password === 'Afra@303') {
+    if (username.trim() === 'mahdsafwan' && password.trim() === 'Afra@303') {
       onLogin();
     } else {
       setError('Invalid admin credentials');
