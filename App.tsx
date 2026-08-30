@@ -13,12 +13,15 @@ import { ProductDetailPage } from './components/ProductDetailPage';
 import { CategoryPage } from './components/CategoryPage';
 import { CheckoutPage } from './components/CheckoutPage';
 import { generateImageFromGemini } from './services/geminiService';
+import { AdminLayout } from './components/admin/AdminLayout';
+import { CustomerLogin } from './components/CustomerLogin';
 
 type View = 
   | { type: 'home' }
   | { type: 'category'; id: string; name: string }
   | { type: 'product'; id: string }
   | { type: 'checkout' }
+  | { type: 'admin' }
   | { type: 'search'; query: string };
 
 function App() {
@@ -31,12 +34,20 @@ function App() {
     return saved ? JSON.parse(saved) : [];
   });
 
-  const [currentView, setCurrentView] = useState<View>({ type: 'home' });
+  const [currentView, setCurrentView] = useState<View>(() => {
+    const path = window.location.pathname;
+    if (path.startsWith('/admin')) {
+      return { type: 'admin' };
+    }
+    return { type: 'home' };
+  });
   const [searchQuery, setSearchQuery] = useState('');
   
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isOrdersOpen, setIsOrdersOpen] = useState(false);
+  const [isCustomerLoginOpen, setIsCustomerLoginOpen] = useState(false);
+  const [isCustomerLoggedIn, setIsCustomerLoggedIn] = useState(false);
 
   // Gemini AI generated images state
   const [geminiImages, setGeminiImages] = useState<Record<string, string>>(() => {
@@ -224,6 +235,13 @@ function App() {
   ];
 
   const activeSlideContent = slidesContent[currentSlide] || slidesContent[0];
+
+  if (currentView.type === 'admin') {
+    return <AdminLayout onNavigateHome={() => {
+      window.history.pushState(null, '', '/');
+      setCurrentView({ type: 'home' });
+    }} />;
+  }
 
   return (
     <div className="min-h-screen bg-slate-50/50 text-slate-800 font-sans relative flex flex-col justify-between">
@@ -434,15 +452,37 @@ function App() {
                 </button>
 
                 {/* Orders / Profile Icon */}
-                <button 
-                  onClick={() => setIsOrdersOpen(true)}
-                  className="relative p-1 text-slate-600 hover:text-[#750a27] transition-colors cursor-pointer flex-shrink-0"
-                  title="View Orders"
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" className="w-5.5 h-5.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
-                  </svg>
-                </button>
+                {!isCustomerLoggedIn ? (
+                  <button 
+                    onClick={() => setIsCustomerLoginOpen(true)}
+                    className="ml-2 px-3 py-1.5 bg-[#750a27] text-white text-xs font-bold rounded-lg hover:bg-[#8f0d30] transition-colors shadow-sm flex-shrink-0 uppercase tracking-wider"
+                    title="Customer Login"
+                  >
+                    Login
+                  </button>
+                ) : (
+                  <div className="relative group">
+                    <button 
+                      onClick={() => setIsOrdersOpen(true)}
+                      className="relative p-1 text-slate-600 hover:text-[#750a27] transition-colors cursor-pointer flex-shrink-0"
+                      title="View Profile / Orders"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" className="w-5.5 h-5.5">
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0ZM4.501 20.118a7.5 7.5 0 0 1 14.998 0A17.933 17.933 0 0 1 12 21.75c-2.676 0-5.216-.584-7.499-1.632Z" />
+                      </svg>
+                    </button>
+                    <div className="absolute right-0 top-full mt-2 w-32 bg-white rounded-xl shadow-xl border border-slate-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all">
+                      <button 
+                        onClick={() => setIsCustomerLoggedIn(false)}
+                        className="w-full text-left px-4 py-2 text-xs font-bold text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
+                      >
+                        Logout
+                      </button>
+                    </div>
+                  </div>
+                )}
+
+
 
               </div>
             </div>
@@ -1181,6 +1221,15 @@ function App() {
       />
 
       <AiAssistant products={products} />
+
+      <CustomerLogin 
+        isOpen={isCustomerLoginOpen}
+        onClose={() => setIsCustomerLoginOpen(false)}
+        onLogin={() => {
+          setIsCustomerLoggedIn(true);
+          setIsCustomerLoginOpen(false);
+        }}
+      />
     </div>
   );
 }

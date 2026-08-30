@@ -67,7 +67,20 @@ export const chatWithShoppingAssistant = async (
     return result.text;
   } catch (error) {
     console.error("Gemini Chat Error:", error);
-    return "I'm having a little trouble connecting to my brain right now. Please try again later!";
+    
+    // Smart fallback for demo mode without API key
+    const msg = userMessage.toLowerCase();
+    if (msg.includes('shoe') || msg.includes('sneaker')) {
+      return "We have some amazing athletic running shoes available in our store right now! Check out our Festival Deals section for the latest styles.";
+    }
+    if (msg.includes('watch') || msg.includes('smartwatch')) {
+      return "Our Precision Timepieces and Smartwatches are top-tier. I highly recommend checking out our wearable technology category for the best deals!";
+    }
+    if (msg.includes('phone') || msg.includes('mobile')) {
+      return "Looking for a new phone? We have the latest smartphones, including the Samsung S23 Ultra and Apple iPhones. Check our Mobiles category!";
+    }
+    
+    return "I'm currently running in demo mode, but I'd love to help! Try asking me about 'shoes', 'watches', or 'phones' to see what I can do.";
   }
 };
 
